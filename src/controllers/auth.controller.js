@@ -10,7 +10,7 @@ const login = async (req, res) => {
     const result = (await authService.login(email))[0]
 
     if(!result){
-        return res.status(404).send({ message: "Usuario invalido" })
+        return res.status(404).send({ message: "Email invalido" })
     }
 
     const passwordIsValid = await bcrypt.compare(senha, result.senha)

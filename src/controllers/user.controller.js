@@ -2,7 +2,7 @@ import userService from "../services/user.service.js"
 
 const createUser = async (req, res) => {
     try{
-        const { nome, email, senha, perfil } = req?.body
+        const { nome, email, senha, perfil } = req?.body ?? {}
         if(!nome || !email || !senha){
             return res.status(400).json({ message: 'Campos de nome/email/senha são obrigatorios!'})
         }
@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
         if(err.code === 'WARN_DATA_TRUNCATED'){
             return res.status(406).json({ message: 'Erro! (Possivel valor invalido no campo \'perfil\')' })
         }
-        res.status(500).json({ message: 'Erro interno', error: err })
+        res.status(500).json({ message: 'Erro interno', error: err.message })
     }
     
 }
