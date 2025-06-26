@@ -4,10 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="../css/home.css">
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
 </head>
 <body>
-    <h1>OLA</h1>
-    <button onclick="deslogar()">Deslogar</button>
+    <aside class="sidebar">
+        <nav>
+            <button>
+                <span>
+                    <i class="material-symbols-outlined"> home </i>
+                    <span>Home</span>
+                </span>
+            </button>
+            <hr class="linha">
+            <button>
+                <span>
+                    <i class="material-symbols-outlined"> tag </i>
+                    <span>Explorar</span>
+                </span>
+            </button>
+
+            <button>
+                <span>
+                    <i class="material-symbols-outlined"> email </i>
+                    <span> Mensagens </span>
+                </span>
+            </button>
+
+            <button>
+                <span>
+                    <i class="material-symbols-outlined"> person </i>
+                    <span> Perfil </span>
+                </span>
+            </button>
+        </nav>
+    </aside>
+    <div class="container" style="border: red 1px solid;">
+        <div class="livros" style="border: red 1px solid;">
+            <div class="livro left">
+                <div class="livro-img">
+
+                </div>
+                <div class="livro-info">
+                    <span>Titulo: </span>
+                    <span>Autor: </span>
+                    <span>Quantidade disponivel: </span>
+                </div>
+            </div>
+            <div class="livro right">
+                <div class="livro-img">
+
+                </div>
+                <div class="livro-info">
+                    <span>Titulo: </span>
+                    <span>Autor: </span>
+                    <span>Quantidade disponivel: </span>
+                </div>
+            </div>
+            <div class="livro left">
+                <div class="livro-img">
+
+                </div>
+                <div class="livro-info">
+                    <span>Titulo: </span>
+                    <span>Autor: </span>
+                    <span>Quantidade disponivel: </span>
+                </div>
+            </div>
+
+            <div class="livro right">
+                <div class="livro-img">
+
+                </div>
+                <div class="livro-info">
+                    <span>Titulo: </span>
+                    <span>Autor: </span>
+                    <span>Quantidade disponivel: </span>
+                </div>
+            </div>
+            <button onclick="deslogar()">Deslogar</button>
+        </div>
+        
+    </div>
+    
     <script src="../js/script.js"></script>
 </body>
 </html>

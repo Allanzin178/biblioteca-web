@@ -22,7 +22,7 @@ class Cookies {
     }
 }
 
-class Usuario {
+class Sistema {
 
     signup(dados) {
         fetch('/usuarios/cadastro', {
@@ -63,11 +63,16 @@ class Usuario {
 
     logout() {
         cookies.deleteCookie('token')
+        window.location.href = '/pages/login.html'
+    }
+
+    verificaCargo () {
+
     }
 }
 
 const cookies = new Cookies()
-const usuario = new Usuario()
+const sistema = new Sistema()
 
 window.addEventListener('DOMContentLoaded', ()=>{
     let formLogin = document.getElementById('formLogin')
@@ -91,16 +96,15 @@ function signOperation(event, acao){
         }
     }
     if(acao === 'login'){
-        usuario.login(dados)
+        sistema.login(dados)
     }
     if(acao === 'signup'){
-        usuario.signup(dados)
+        sistema.signup(dados)
     }
     
 }
 
 function deslogar(){
-    usuario.logout()
-    window.location.href = '/pages/login.html'
+    sistema.logout()
 }
 
