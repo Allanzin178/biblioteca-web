@@ -41,4 +41,10 @@ const deleteUser = async (req, res) => {
     res.status(200).json({ message: 'Deu bom', result })
 }
 
-export { createUser, getAllUsers, deleteUser }
+const getUserByToken = async (req, res) => {
+    const { decodedToken } = req
+    const user = await userService.getById(decodedToken.id)
+    res.status(200).json({ message: 'Deu bom', user })
+}
+
+export { createUser, getAllUsers, deleteUser, getUserByToken }
