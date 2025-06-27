@@ -5,7 +5,6 @@ import { isBibliotecario, isLeitor } from '../middlewares/role.middleware.js'
 import { validateEmprestimo } from '../middlewares/validate.middleware.js'
 const router = Router()
 
-router.post('/registrar/', authMiddleware, isLeitor, createEmprestimo)
 router.put('/atualizar/:id', authMiddleware, isBibliotecario, validateEmprestimo, atualizarEmprestimo)
 router.get('/', authMiddleware, isBibliotecario, getAllEmprestimos)
 router.get('/fromUser', authMiddleware, getEmprestimosAtivosFromUser)

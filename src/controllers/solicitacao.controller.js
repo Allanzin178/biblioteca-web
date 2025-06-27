@@ -1,5 +1,6 @@
 import livroService from "../services/livro.service.js"
 import solicitacaoService from "../services/solicitacao.service.js"
+import emprestimoService from "../services/emprestimo.service.js"
 
 const createSolicitacao = async (req, res) => {
     const { livro_id } = req.body // Ta sendo passado pelo body mas pode ser passado pelo params tambem (criterio dos devs)
@@ -49,9 +50,37 @@ const aprovarSolicitacao = async (req, res) => {
     if(!solicitacao){
         return res.status(404).json({ message: 'Solicitacao não encontrada' })
     }
+    if(solicitacao.status === 'aprovado'){
+        return res.status(400).json({ message: 'Solicitacao já foi aprovada' })
+    }
 
-    const result = await solicitacaoService.updateStatus('aprovado', solicitacao_id)
-    res.status(201).json({ message: 'Solicitacao atualizada!', result })
+    const [ dataEmprestimo, dataDevolucaoEmprestimo ] = criarDatas(14) // Retorna data dos emprestimos
+    const livro = (await livroService.getById(solicitacao.livro_id))[0] // Pega o livro pelo id fornecido  
+    const emprestimo = [
+        solicitacao_id,
+        dataEmprestimo,
+        dataDevolucaoEmprestimo
+    ]
+
+    try{
+        await emprestimoService.insert(emprestimo)
+                            // Quantidade                          // Campo                 // Id
+        await livroService.update([livro['quantidade_disponivel'] - 1], ['quantidade_disponivel'], solicitacao.livro_id)
+        console.log('Emprestimo criado!')
+
+        const result = await solicitacaoService.updateStatus('aprovado', solicitacao_id)
+        res.status(201).json({ message: 'Solicitacao atualizada!', result })
+
+    }catch(erro){
+        console.log(erro)
+        return res.status(400).json({ message: 'Erro no emprestimo' })
+    }
+
+}
+
+const getAllSolicitacoes = async (req, res) => {
+    const result = await solicitacaoService.getAll()
+    res.status(200).json({ message: "Ok!", result })
 }
 
 function dataFormatada(data){
@@ -60,5 +89,19 @@ function dataFormatada(data){
     return dataLocal.toISOString().split('T')[0]
 }
 
+function criarDatas(dias){
+    const dataAgora = new Date()
+    const dataDepois = new Date()
 
-export { createSolicitacao, aprovarSolicitacao }
+    dataDepois.setDate(dataAgora.getDate() + dias)
+
+    const dataEmprestimo = dataFormatada(dataAgora)
+    const dataDevolucaoEmprestimo = dataFormatada(dataDepois)
+
+    return [dataEmprestimo, dataDevolucaoEmprestimo]
+}
+
+
+
+
+export { createSolicitacao, aprovarSolicitacao, getAllSolicitacoes }

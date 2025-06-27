@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Bibliotecário</title>
+    <link rel="stylesheet" href="../css/home.css">
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
+</head>
+<body>
+    <aside class="sidebar">
+        <nav>
+            <button onclick="window.location.href='bibliotecario.html'">
+                <span>
+                    <i class="material-symbols-outlined"> home </i>
+                    <span>Home</span>
+                </span>
+            </button>
+            <hr class="linha">
+            <button onclick="mostrarSecao('gerenciar-livros')">
+                <span>
+                    <i class="material-symbols-outlined"> menu_book </i>
+                    <span>Gerenciar Livros</span>
+                </span>
+            </button>
+            <button onclick="mostrarSecao('gerenciar-emprestimos')">
+                <span>
+                    <i class="material-symbols-outlined"> list_alt </i>
+                    <span>Empréstimos</span>
+                </span>
+            </button>
+            <button onclick="deslogar()">
+                <span>
+                    <i class="material-symbols-outlined"> logout </i>
+                    <span>Sair</span>
+                </span>
+            </button>
+        </nav>
+    </aside>
+    <div class="container">
+        <!-- Seção Gerenciar Livros -->
+        <div id="gerenciar-livros" class="secao">
+            <h2 style="color: white;">Gerenciar Livros</h2>
+            
+            <div class="formulario-livro">
+                <h3>Adicionar Novo Livro</h3>
+                <form id="form-adicionar-livro">
+                    <input type="text" id="titulo" placeholder="Título" required>
+                    <input type="text" id="autor" placeholder="Autor" required>
+                    <input type="number" id="ano" placeholder="Ano de Publicação">
+                    <input type="number" id="quantidade" placeholder="Quantidade" required>
+                    <button type="submit">Adicionar Livro</button>
+                </form>
+            </div>
+            
+            <div class="lista-livros">
+                <h3>Lista de Livros</h3>
+                <div id="lista-livros">
+                    <!-- Livros serão carregados via JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção Gerenciar Empréstimos -->
+        <div id="gerenciar-emprestimos" class="secao" style="display: none;">
+            <h2 style="color: white;">Gerenciar Empréstimos</h2>
+            <div id="lista-emprestimos">
+                <!-- Empréstimos serão carregados via JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/script.js"></script>
+</body>

@@ -9,8 +9,15 @@ class SolicitacaoService{
 
     updateStatus = async (status, id)=>{
         const query = `UPDATE solicitacoes_emprestimo SET status = ? WHERE id = ?`
-        promiseSql(query, [status, id])
-        return promiseSql('SELECT * FROM solicitacoes_emprestimo s INNER JOIN emprestimos e ON e.solicitacao_id = s.id WHERE s.id = ?', id)
+        await promiseSql(query, [status, id])
+        const solicitacao = await promiseSql('SELECT * FROM solicitacoes_emprestimo WHERE id = ?', id)
+        const emprestimo = await promiseSql('SELECT * FROM emprestimos WHERE solicitacao_id = ?', id)
+        return [...solicitacao, ...emprestimo]
+    }
+
+    getAll = () => {
+        const query = 'SELECT * FROM solicitacoes_emprestimo'
+        return promiseSql(query)
     }
 
     getById = (id) => {

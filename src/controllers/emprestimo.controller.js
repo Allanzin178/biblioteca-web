@@ -64,7 +64,8 @@ const atualizarEmprestimo = async (req, res) => {
             return res.status(400).json({ message: 'Status informado não existe!' })
         }
 
-        const livro = (await livroService.getById(emprestimo.livro_id))[0]
+        const solicitacao = (await solicitacaoService.getById(emprestimo.solicitacao_id))[0]
+        const livro = (await livroService.getById(solicitacao.livro_id))[0]
 
         const result = await emprestimoService.update(status, emprestimo.id, dataFormatada(new Date()))
 
@@ -75,7 +76,7 @@ const atualizarEmprestimo = async (req, res) => {
         res.status(201).json({ message: 'Ok!', result })
 
     }catch(err){
-        return res.status(400).json({ message: 'Erro na devolução do livro!', err: err.message })
+        return res.status(400).json({ message: 'Erro na devolução do livro!', err: err })
     }
 }
 
@@ -89,7 +90,7 @@ const getEmprestimosAtivosFromUser = async (req, res) => {
         // Se não for passado nada no body, ele le como se fosse o id do token
         const leitor_id = req.params?.id ?? req.decodedToken.id
         
-        const result = await emprestimoService.getByFields(['leitor_id', 'status'], [leitor_id, 'ativo'])
+        const result = await emprestimoService.getAllFromUser(leitor_id)
 
         if(result.length == 0){
             return res.status(404).json({ message: "Nenhum emprestimo encontrado!" })

@@ -8,7 +8,10 @@ class EmprestimoService{
     }
 
     getAll = () => {
-        const query = 'SELECT * FROM emprestimos'
+        const query = `SELECT 
+            e.*, s.leitor_id, s.livro_id
+            FROM emprestimos e
+            LEFT JOIN solicitacoes_emprestimo s ON s.id = e.solicitacao_id`
         return promiseSql(query)
     }
 
@@ -38,6 +41,14 @@ class EmprestimoService{
         })
         const query = `SELECT * FROM emprestimos WHERE ${camposFormatados.join(and ? ' AND ' : ' OR ')}`
         return promiseSql(query, valores)
+    }
+
+    getAllFromUser = (id, status = 'ativo') =>{
+        const query = `SELECT e.* 
+                        FROM emprestimos e
+                        INNER JOIN solicitacoes_emprestimo s ON s.id = e.solicitacao_id
+                        WHERE s.leitor_id = ? AND e.status = ?`
+        return promiseSql(query, [id, status])
     }
 }
 
