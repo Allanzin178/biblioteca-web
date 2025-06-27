@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node ./src/server.js"
+    "dev": "nodemon --watch src --watch public --ext js,json,html,css src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +18,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

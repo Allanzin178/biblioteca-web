@@ -21,25 +21,54 @@ body {
     padding: 30px;
 }
 
+.livros h2 {
+    color: white;
+}
+
 .livro {
     padding: 10px 15px;
     width: 95%;
     margin: auto;
     border-radius: 10px;
-    background-color: #D1D9AA;
-}
-
-.left {
-    text-align: left;
-}
-
-.right {
-    text-align: right;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .livro-info {
     display: flex;
     flex-direction: column;
+}
+
+.livro-btn {
+    background: #a37b0b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+.livro-btn:hover {
+    background: #5C4631;
+}
+
+.livro-btn span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1;
+}
+
+.livro-btn i {
+    position: relative;
+    font-size: 20px;
 }
 
 /* Sidebar */
@@ -104,7 +133,6 @@ body {
 .sidebar button:last-child{
     margin-top: auto;
 }
-
 
 .linha {
     width: 100%;
