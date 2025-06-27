@@ -2,7 +2,7 @@ import promiseSql from "./promise.service.js"
 
 class EmprestimoService{
     insert = async (emprestimo)=>{
-        const query = 'INSERT INTO emprestimos (livro_id, leitor_id, data_emprestimo, data_devolucao_prevista) VALUES (?)'
+        const query = 'INSERT INTO emprestimos (solicitacao_id, data_emprestimo, data_devolucao_prevista) VALUES (?)'
         const result = await promiseSql(query, [emprestimo])
         return promiseSql('SELECT * FROM emprestimos WHERE id = ?', result.insertId)
     }

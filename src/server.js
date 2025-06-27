@@ -8,6 +8,7 @@ import userRoutes from './routes/user.routes.js'
 import livroRoutes from './routes/livro.routes.js'
 import emprestimoRoutes from './routes/emprestimo.routes.js'
 import authRoutes from './routes/auth.route.js'
+import solicitacaoRoutes from './routes/solicitacao.route.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')))
 app.use('/login', authRoutes)
 app.use('/livros', livroRoutes)
 app.use('/emprestimos', emprestimoRoutes)
+app.use('/solicitacao', solicitacaoRoutes)
 app.use('/usuarios', userRoutes)
 
 app.listen(3000, () => {

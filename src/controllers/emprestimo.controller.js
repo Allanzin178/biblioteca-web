@@ -1,27 +1,30 @@
 import emprestimoService from "../services/emprestimo.service.js"
 import livroService from "../services/livro.service.js"
+import solicitacaoService from "../services/solicitacao.service.js"
 
 const createEmprestimo = async (req, res) => {
     // ID do leitor: autenticação
-    // ID do livro: passado pelo body
+    // ID da solicitacao: passado pelo body
     // Data emprestimo: Date().toISOString() -- Momento que roda o programa (agora)
 
     // Regra de negocio: 14 dias para devolução
     // So pode criar emprestimo se quantidade livro for maior que zero
     
     const [ dataEmprestimo, dataDevolucaoEmprestimo ] = criarDatas(14) // Retorna data dos emprestimos
-    const { livro_id } = req.body // Ta sendo passado pelo body mas pode ser passado pelo params tambem (criterio dos devs)
-    console.log(livro_id)
-    const livro = (await livroService.getById(livro_id))[0] // Pega o livro pelo id fornecido  
-    const { id: leitor_id } = req.decodedToken // Recupera o id do leitor pelo token fornecido
-
-    if(livro['quantidade_disponivel'] < 1){
-        return res.status(409).json({ message: 'Livro esgotado' })
+    const { solicitacao_id } = req.body // Ta sendo passado pelo body mas pode ser passado pelo params tambem (criterio dos devs)
+    if(!solicitacao_id){
+        return res.status(400).json({ message: 'Necessario informar uma solicitacao' })
     }
 
+    const solicitacao = (await solicitacaoService.getById(solicitacao_id))[0]
+    if(!solicitacao){
+        return res.status(404).json({ message: 'Solicitacao não encontrada' })
+    }
+
+    const livro = (await livroService.getById(solicitacao.livro_id))[0] // Pega o livro pelo id fornecido  
+
     const emprestimo = [
-        livro_id,
-        leitor_id,
+        solicitacao_id,
         dataEmprestimo,
         dataDevolucaoEmprestimo
     ]
@@ -29,15 +32,12 @@ const createEmprestimo = async (req, res) => {
     try{
         const result = await emprestimoService.insert(emprestimo)
                             // Quantidade                          // Campo                 // Id
-        await livroService.update([livro['quantidade_disponivel'] - 1], ['quantidade_disponivel'], livro_id)
+        await livroService.update([livro['quantidade_disponivel'] - 1], ['quantidade_disponivel'], solicitacao.livro_id)
         res.status(201).json({ message: 'Emprestimo aprovado!', result })
     }catch(erro){
         console.log(erro)
         return res.status(400).json({ message: 'Erro no emprestimo' })
     }
-    
-    
-    
 }
 
 const atualizarEmprestimo = async (req, res) => {
