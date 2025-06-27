@@ -43,7 +43,7 @@ const deleteUser = async (req, res) => {
 
 const getUserByToken = async (req, res) => {
     const { decodedToken } = req
-    const user = await userService.getById(decodedToken.id)
+    const user = (await userService.getById(decodedToken.id))[0]
     res.status(200).json({ message: 'Deu bom', user })
 }
 

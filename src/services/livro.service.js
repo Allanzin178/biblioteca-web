@@ -45,9 +45,27 @@ class LivroService{
     }
 
     // TODO: Fazer erro caso id nao seja encontrado
-    delete = (id) => {
-        const query = 'DELETE FROM livros WHERE id = ?'
-        return promiseSql(query, id)
+    delete = async (id) => {
+        const deletarEmprestimos = `
+                DELETE FROM emprestimos 
+                WHERE solicitacao_id IN (
+                    SELECT id FROM solicitacoes_emprestimo WHERE livro_id = ?
+                )
+            `
+
+        const deletarSolicitacoes = `
+                DELETE FROM solicitacoes_emprestimo 
+                WHERE livro_id = ?
+            `
+
+        const deletarLivro = `
+                DELETE FROM livros 
+                WHERE id = ?
+            `
+
+        await promiseSql(deletarEmprestimos, id)
+        await promiseSql(deletarSolicitacoes, id)
+        return promiseSql(deletarLivro, id)
     }
 }
 

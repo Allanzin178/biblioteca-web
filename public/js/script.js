@@ -65,8 +65,15 @@ class Sistema {
         window.location.href = '/pages/login.html'
     }
 
-    verificaCargo() {
+    async getPerfil() {
         // Implementação futura
+        const response = await fetch('/usuarios/tokenUser', {
+            headers: {
+                Authorization: `Bearer ${cookies.getCookie('token')}`
+            }
+        })
+        const resposta = await response.json()
+        return resposta.user.perfil
     }
 }
 
@@ -100,9 +107,10 @@ async function carregarLivros() {
                             <p>Autor: ${livro.autor}</p>
                             <p>Ano: ${livro.ano_publicacao || 'Não informado'}</p>
                             <p>Disponíveis: ${livro.quantidade_disponivel}</p>
-                            <button onclick="editarLivro(${livro.id})">Editar</button>
-                            <button onclick="removerLivro(${livro.id})">Remover</button>
+                            
                         </div>
+                        <button onclick="editarLivro(${livro.id})" class="livro-btn">Editar</button>
+                        <button onclick="removerLivro(${livro.id})" class="livro-btn">Remover</button>
                     `;
                     container.appendChild(livroDiv);
                 });
@@ -138,9 +146,9 @@ async function carregarEmprestimos() {
                             ${emp.status === 'devolvido' ? 
                                 `<p>Data Devolução Real: ${new Date(emp.data_devolucao_real).toLocaleDateString()}</p>` : ''}
                             <p>Status: ${emp.status}</p>
-                            ${(emp.status === 'ativo' || emp.status === 'atrasado') ? 
-                                `<button onclick="registrarDevolucao(${emp.id})">Registrar Devolução</button>` : ''}
                         </div>
+                        ${(emp.status === 'ativo' || emp.status === 'atrasado') ? 
+                                `<button onclick="registrarDevolucao(${emp.id})" class="livro-btn">Registrar Devolução</button>` : ''}
                     `;
                     container.appendChild(empDiv);
                 });
@@ -149,6 +157,43 @@ async function carregarEmprestimos() {
     } catch (error) {
         console.error('Erro ao carregar empréstimos:', error);
         alert('Erro ao carregar empréstimos. Tente novamente mais tarde.');
+    }
+}
+
+async function carregarSolicitacoes() {
+    try {
+        const response = await fetch('/solicitacao/', {
+            headers: {
+                Authorization: `Bearer ${cookies.getCookie('token')}`
+            }
+        });
+        const solicitacoes = await response.json();
+        
+        const container = document.getElementById('lista-solicitacoes');
+        container.innerHTML = '';
+        
+        for(let chave in solicitacoes){
+            if(chave === 'result'){
+                solicitacoes[chave].forEach(sol => {
+                    const solDiv = document.createElement('div');
+                    solDiv.className = 'livro';
+                    solDiv.innerHTML = `
+                        <div class="livro-info">
+                            <p>Data Solicitação: ${new Date(sol.data_solicitacao).toLocaleDateString()}</p>
+                            <p>Livro solicitado: ${sol.titulo_livro}</p>
+                            <p>Usuario que solicitou: ${sol.nome_usuario}</p>
+                            <p>Status: ${sol.status}</p>
+                        </div>
+                        ${(sol.status === 'pendente') ? 
+                                `<button onclick="aprovarSolicitacao(${sol.id})" class="livro-btn">Aprovar solicitação</button>` : ''}
+                    `;
+                    container.appendChild(solDiv);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar solicitações:', error);
+        alert('Erro ao carregar solicitações. Tente novamente mais tarde.');
     }
 }
 
@@ -163,7 +208,7 @@ async function adicionarLivro(e) {
     };
     
     try {
-        const response = await fetch('/livros', {
+        const response = await fetch('/livros/cadastro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -236,6 +281,99 @@ async function registrarDevolucao(id) {
     }
 }
 
+async function criarLivroForm() {
+    const formContainer = document.getElementById('form-container');
+    if (!formContainer) return;
+
+    formContainer.innerHTML = `
+        <form id="form-criar-livro" class="livro-form">
+            <h2>Adicionar Novo Livro</h2>
+            <div class="form-group">
+                <label for="novo-titulo">Título:</label>
+                <input type="text" id="novo-titulo" name="titulo" required>
+            </div>
+            <div class="form-group">
+                <label for="novo-autor">Autor:</label>
+                <input type="text" id="novo-autor" name="autor" required>
+            </div>
+            <div class="form-group">
+                <label for="novo-ano">Ano de Publicação:</label>
+                <input type="number" id="novo-ano" name="ano_publicacao">
+            </div>
+            <div class="form-group">
+                <label for="novo-quantidade">Quantidade Disponível:</label>
+                <input type="number" id="novo-quantidade" name="quantidade_disponivel" required min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label for="novo-isbn">ISBN:</label>
+                <input type="text" id="novo-isbn" name="isbn">
+            </div>
+            <div class="form-group">
+                <label for="novo-editora">Editora:</label>
+                <input type="text" id="novo-editora" name="editora">
+            </div>
+            <button type="submit" class="btn-submit">Adicionar Livro</button>
+        </form>
+    `;
+
+    document.getElementById('form-criar-livro').addEventListener('submit', criarLivro);
+}
+
+
+async function criarLivro(e) {
+    e.preventDefault();
+    
+    const livro = {
+        titulo: document.getElementById('novo-titulo').value,
+        autor: document.getElementById('novo-autor').value,
+        ano_publicacao: document.getElementById('novo-ano').value || null,
+        quantidade_disponivel: document.getElementById('novo-quantidade').value,
+        isbn: document.getElementById('novo-isbn').value || null,
+        editora: document.getElementById('novo-editora').value || null
+    };
+
+    try {
+        const response = await fetch('/livros', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cookies.getCookie('token')}`
+            },
+            body: JSON.stringify(livro)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Livro criado com sucesso!');
+            document.getElementById('form-criar-livro').reset();
+            await carregarLivros();
+            mostrarSecao('lista-livros');
+        } else {
+            alert(data.message || 'Erro ao criar livro');
+        }
+    } catch (error) {
+        console.error('Erro ao criar livro:', error);
+        alert('Erro ao criar livro. Tente novamente mais tarde.');
+    }
+}
+
+function mostrarBotaoAdicionarLivro() {
+    const botoesContainer = document.getElementById('botoes-acao');
+    if (!botoesContainer) return;
+
+    botoesContainer.innerHTML = `
+        <button onclick="mostrarFormCriarLivro()" class="btn-adicionar">
+            <i class="fas fa-plus"></i> Adicionar Livro
+        </button>
+    `;
+}
+
+function mostrarFormCriarLivro() {
+    criarLivroForm();
+    mostrarSecao('form-container');
+}
+
 function signOperation(event, acao) {
     event.preventDefault()
     const form = event.target
@@ -259,9 +397,10 @@ function deslogar() {
 }
 
 // Event Listeners
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     let formLogin = document.getElementById('formLogin')
     let formCadastro = document.getElementById('formCadastro')
+    const userPerfil = await sistema.getPerfil()
 
     if (formLogin) { formLogin.addEventListener('submit', event => signOperation(event, 'login')) }
     if (formCadastro) { formCadastro.addEventListener('submit', event => signOperation(event, 'signup')) }
@@ -272,11 +411,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if ((window.location.pathname == '/pages/home.html') && !cookies.getCookie('token')) { 
         window.location.href = '/pages/login.html' 
     }
+    if ((window.location.pathname == '/pages/bibliotecario.html') && (!cookies.getCookie('token') || userPerfil !== 'bibliotecario')) { 
+        window.location.href = '/pages/login.html' 
+    }
 
     // Adiciona os event listeners específicos da biblioteca se estiver na página correta
     if (document.getElementById('form-adicionar-livro')) {
         document.getElementById('form-adicionar-livro').addEventListener('submit', adicionarLivro);
         carregarLivros();
         carregarEmprestimos();
+        carregarSolicitacoes()
     }
 });

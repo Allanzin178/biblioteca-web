@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Bibliotecário</title>
-    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/bibliotecario.css">
     <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
@@ -32,6 +32,12 @@
                     <span>Empréstimos</span>
                 </span>
             </button>
+            <button onclick="mostrarSecao('gerenciar-solicitacoes')">
+                <span>
+                    <i class="material-symbols-outlined"> sort </i>
+                    <span>Solicitações</span>
+                </span>
+            </button>
             <button onclick="deslogar()">
                 <span>
                     <i class="material-symbols-outlined"> logout </i>
@@ -42,22 +48,22 @@
     </aside>
     <div class="container">
         <!-- Seção Gerenciar Livros -->
-        <div id="gerenciar-livros" class="secao">
+        <div id="gerenciar-livros" class="secao  livros">
             <h2 style="color: white;">Gerenciar Livros</h2>
             
             <div class="formulario-livro">
-                <h3>Adicionar Novo Livro</h3>
+                <h3 style="color: white;">Adicionar Novo Livro</h3>
                 <form id="form-adicionar-livro">
                     <input type="text" id="titulo" placeholder="Título" required>
                     <input type="text" id="autor" placeholder="Autor" required>
                     <input type="number" id="ano" placeholder="Ano de Publicação">
                     <input type="number" id="quantidade" placeholder="Quantidade" required>
-                    <button type="submit">Adicionar Livro</button>
+                    <button type="submit" class="livro-btn">Adicionar Livro</button>
                 </form>
             </div>
             
             <div class="lista-livros">
-                <h3>Lista de Livros</h3>
+                <h3 style="color: white;">Lista de Livros</h3>
                 <div id="lista-livros">
                     <!-- Livros serão carregados via JavaScript -->
                 </div>
@@ -65,13 +71,19 @@
         </div>
         
         <!-- Seção Gerenciar Empréstimos -->
-        <div id="gerenciar-emprestimos" class="secao" style="display: none;">
+        <div id="gerenciar-emprestimos" class="secao livros" style="display: none;">
             <h2 style="color: white;">Gerenciar Empréstimos</h2>
             <div id="lista-emprestimos">
                 <!-- Empréstimos serão carregados via JavaScript -->
             </div>
         </div>
+
+        <div id="gerenciar-solicitacoes" class="secao livros" style="display: none;">
+            <h2 style="color: white;">Gerenciar Solicitações</h2>
+            <div id="lista-solicitacoes">
+                <!-- Empréstimos serão carregados via JavaScript -->
+            </div>
+        </div>
     </div>
-    
     <script src="../js/script.js"></script>
 </body>

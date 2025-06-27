@@ -16,7 +16,7 @@ class SolicitacaoService{
     }
 
     getAll = () => {
-        const query = 'SELECT * FROM solicitacoes_emprestimo'
+        const query = 'SELECT s.*, l.titulo as titulo_livro, u.nome as nome_usuario FROM solicitacoes_emprestimo s JOIN livros l ON l.id = s.livro_id JOIN users u ON u.id = s.leitor_id'
         return promiseSql(query)
     }
 
