@@ -69,7 +69,7 @@ const aprovarSolicitacao = async (req, res) => {
         console.log('Emprestimo criado!')
 
         const result = await solicitacaoService.updateStatus('aprovado', solicitacao_id)
-        res.status(201).json({ message: 'Solicitacao atualizada!', result })
+        res.status(201).json({ message: 'Solicitacao aprovada!', result })
 
     }catch(erro){
         console.log(erro)

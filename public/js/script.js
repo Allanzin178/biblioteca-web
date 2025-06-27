@@ -66,7 +66,6 @@ class Sistema {
     }
 
     async getPerfil() {
-        // Implementação futura
         const response = await fetch('/usuarios/tokenUser', {
             headers: {
                 Authorization: `Bearer ${cookies.getCookie('token')}`
@@ -78,14 +77,106 @@ class Sistema {
 }
 
 const cookies = new Cookies()
+let livroEditandoId = null
 const sistema = new Sistema()
 
-// Funções da biblioteca
 function mostrarSecao(secaoId) {
     document.querySelectorAll('.secao').forEach(secao => {
         secao.style.display = 'none';
     });
     document.getElementById(secaoId).style.display = 'block';
+}
+
+async function carregarLivrosLeitor() {
+    try {
+        const response = await fetch('/livros');
+        const livros = await response.json();
+        
+        const container = document.getElementById('livros');
+        container.innerHTML = '<h2>Biblioteca:</h2>';
+        
+        for(let chave in livros){
+            if(chave === 'result'){
+                livros[chave].forEach(livro => {
+                    const livroDiv = document.createElement('div');
+                    livroDiv.className = 'livro';
+                    livroDiv.innerHTML = `
+                        <div class="livro-info">
+                            <span>Titulo: ${livro.titulo}</span>
+                            <span>Autor: ${livro.autor}</span>
+                            <span>Ano: ${livro.ano_publicacao ?? 'Não informado'}</span>
+                            <span>Quantidade disponivel: ${livro.quantidade_disponivel}</span>
+                        </div>
+                        <button class="livro-btn" onclick="solicitar(${livro.id})">
+                            <span>
+                                <i class="material-symbols-outlined"> shopping_cart_checkout </i>
+                                <span>Solicitar</span>
+                            </span>
+                        </button>
+                    `;
+                    container.appendChild(livroDiv);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar livros:', error);
+        alert('Erro ao carregar livros. Tente novamente mais tarde.');
+    }
+}
+
+async function carregarEmprestimosAtivosLeitor() {
+    try {
+        const response = await fetch('/emprestimos/fromUser/', {
+            headers: {
+                Authorization: `Bearer ${cookies.getCookie('token')}`
+            }
+        });
+        const emprestimos = await response.json();
+        
+        const container = document.getElementById('livros');
+        container.innerHTML = '<h2>Meus livros:</h2>';
+        
+        for(let chave in emprestimos){
+            if(chave === 'result'){
+                emprestimos[chave].forEach(emprestimo => {
+                    const emprestimoDiv = document.createElement('div');
+                    emprestimoDiv.className = 'livro';
+                    emprestimoDiv.innerHTML = `
+                        <div class="livro-info">
+                            <span>Titulo: ${emprestimo.titulo_livro}</span>
+                            <span>Data de devolução: ${new Date(emprestimo.data_devolucao_prevista).toLocaleDateString()}</span>
+                            <span>Status: ${emprestimo.status}</span>
+                        </div>
+                    `;
+                    container.appendChild(emprestimoDiv);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar livros:', error);
+        alert('Erro ao carregar livros. Tente novamente mais tarde.');
+    }
+}
+
+async function solicitar(id) {
+    try {
+        const livro_id = {
+            livro_id: id
+        }
+        const response = await fetch('/solicitacao/criar/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${cookies.getCookie('token')}`
+            },
+            body: JSON.stringify(livro_id)
+        });
+        const resposta = await response.json();
+        alert(resposta.message)
+    } catch (error) {
+        console.error('Erro ao carregar livros:', error);
+        alert('Erro ao carregar livros. Tente novamente mais tarde.');
+    }
 }
 
 async function carregarLivros() {
@@ -141,6 +232,8 @@ async function carregarEmprestimos() {
                     empDiv.className = 'livro';
                     empDiv.innerHTML = `
                         <div class="livro-info">
+                            <p>Nome do leitor: ${emp.nome_leitor}</p>
+                            <p>Titulo do livro: ${emp.titulo_livro}</p>
                             <p>Data Empréstimo: ${new Date(emp.data_emprestimo).toLocaleDateString()}</p>
                             <p>Data Devolução Prevista: ${new Date(emp.data_devolucao_prevista).toLocaleDateString()}</p>
                             ${emp.status === 'devolvido' ? 
@@ -197,6 +290,26 @@ async function carregarSolicitacoes() {
     }
 }
 
+async function aprovarSolicitacao(id){
+    const solicitacao_id = {
+        solicitacao_id: id
+    }
+    const response = await fetch(`/solicitacao/aprovar`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies.getCookie('token')}`
+        },
+        body: JSON.stringify(solicitacao_id)
+    });
+    const resposta = await response.json()
+
+    alert(resposta.message);
+    carregarSolicitacoes()
+    carregarEmprestimos()
+    carregarLivros()
+}
+
 async function adicionarLivro(e) {
     e.preventDefault();
     
@@ -231,8 +344,62 @@ async function adicionarLivro(e) {
     }
 }
 
+function fecharModal() {
+    document.getElementById('modal-editar').classList.remove('show');
+    livroEditandoId = null;
+}
+
+async function salvarEdicao(dadosLivro) {
+    try {
+        const response = await fetch(`/livros/${livroEditandoId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cookies.getCookie('token')}`
+            },
+            body: JSON.stringify(dadosLivro)
+        });
+        
+        console.log('Salvando livro:', dadosLivro);
+
+        alert('Livro editado com sucesso!');
+        fecharModal();
+        carregarLivros();
+        
+    } catch (error) {
+        console.error('Erro ao editar livro:', error);
+        alert('Erro ao editar livro. Tente novamente mais tarde.');
+    }
+}
+
 async function editarLivro(id) {
-    alert('Funcionalidade de edição será implementada aqui');
+    const response = await fetch(`/livros/${id}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${cookies.getCookie('token')}`
+        },
+    })
+    const resposta = await response.json()
+    const livro = {}
+    if (!resposta) return;
+
+    for(let chave in resposta){
+        if(chave === 'result'){
+            livro.titulo = resposta[chave][0].titulo
+            livro.autor = resposta[chave][0].autor
+            livro.ano_publicacao = resposta[chave][0].ano_publicacao
+            livro.quantidade_disponivel = resposta[chave][0].quantidade_disponivel
+        }
+    }
+
+    livroEditandoId = id;
+    
+    document.getElementById('edit-titulo').value = livro.titulo;
+    document.getElementById('edit-autor').value = livro.autor;
+    document.getElementById('edit-ano').value = livro.ano_publicacao || '';
+    document.getElementById('edit-quantidade').value = livro.quantidade_disponivel;
+    
+    document.getElementById('modal-editar').classList.add('show');
 }
 
 async function removerLivro(id) {
@@ -260,25 +427,27 @@ async function removerLivro(id) {
 }
 
 async function registrarDevolucao(id) {
-    try {
-        const response = await fetch(`/emprestimos/${id}/devolver`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${cookies.getCookie('token')}`
-            }
-        });
-        
-        if (response.ok) {
-            alert('Devolução registrada com sucesso!');
-            carregarEmprestimos();
-        } else {
-            const erro = await response.json();
-            alert(erro.message);
-        }
-    } catch (error) {
-        console.error('Erro ao registrar devolução:', error);
-        alert('Erro ao registrar devolução. Tente novamente mais tarde.');
+
+    const devolucao = {
+        status: 'devolvido'
     }
+    const response = await fetch(`/emprestimos/atualizar/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies.getCookie('token')}`
+        },
+        body: JSON.stringify(devolucao)
+    });
+    
+    if (response.ok) {
+        alert('Devolução registrada com sucesso!');
+        carregarEmprestimos();
+    } else {
+        const erro = await response.json();
+        alert(erro.message);
+    }
+    
 }
 
 
@@ -304,14 +473,17 @@ function deslogar() {
     sistema.logout()
 }
 
-// Event Listeners
 window.addEventListener('DOMContentLoaded', async () => {
     let formLogin = document.getElementById('formLogin')
     let formCadastro = document.getElementById('formCadastro')
-    const userPerfil = await sistema.getPerfil()
+    
 
-    if (formLogin) { formLogin.addEventListener('submit', event => signOperation(event, 'login')) }
-    if (formCadastro) { formCadastro.addEventListener('submit', event => signOperation(event, 'signup')) }
+    if (formLogin) { 
+        formLogin.addEventListener('submit', event => signOperation(event, 'login')) 
+    }
+    if (formCadastro) { 
+        formCadastro.addEventListener('submit', event => signOperation(event, 'signup')) 
+    }
 
     if ((window.location.pathname == '/pages/login.html' || window.location.pathname == '/pages/cadastro.html') && cookies.getCookie('token')) { 
         window.location.href = '/pages/home.html' 
@@ -319,15 +491,52 @@ window.addEventListener('DOMContentLoaded', async () => {
     if ((window.location.pathname == '/pages/home.html') && !cookies.getCookie('token')) { 
         window.location.href = '/pages/login.html' 
     }
-    if ((window.location.pathname == '/pages/bibliotecario.html') && (!cookies.getCookie('token') || userPerfil !== 'bibliotecario')) { 
+    if ((window.location.pathname == '/pages/bibliotecario.html') && !cookies.getCookie('token')) { 
         window.location.href = '/pages/login.html' 
     }
+    if(cookies.getCookie('token')) {
+        const userPerfil = await sistema.getPerfil()
+        if((window.location.pathname == '/pages/bibliotecario.html') && userPerfil !== 'bibliotecario'){
+            window.location.href = '/pages/login.html' 
+        }
+        if((window.location.pathname == '/pages/home.html') ){
+            if(userPerfil === 'bibliotecario'){
+                window.location.href = '/pages/bibliotecario.html' 
+            }
+            carregarLivrosLeitor()
+        }
+        if((window.location.pathname == '/pages/livros.html') ){
+            if(userPerfil === 'bibliotecario'){
+                window.location.href = '/pages/bibliotecario.html' 
+            }
+            carregarEmprestimosAtivosLeitor()
+        }
+    }
 
-    // Adiciona os event listeners específicos da biblioteca se estiver na página correta
+    document.getElementById('form-editar-livro').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const dadosLivro = {
+            titulo: document.getElementById('edit-titulo').value,
+            autor: document.getElementById('edit-autor').value,
+            ano_publicacao: document.getElementById('edit-ano').value || null,
+            quantidade_disponivel: parseInt(document.getElementById('edit-quantidade').value)
+        };
+        
+        salvarEdicao(dadosLivro);
+    });
+    
+    document.getElementById('modal-editar').addEventListener('click', function(e) {
+        if (e.target === this) {
+            fecharModal();
+        }
+    });
+
     if (document.getElementById('form-adicionar-livro')) {
         document.getElementById('form-adicionar-livro').addEventListener('submit', adicionarLivro);
         carregarLivros();
         carregarEmprestimos();
         carregarSolicitacoes()
     }
+
 });

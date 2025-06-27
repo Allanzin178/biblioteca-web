@@ -46,6 +46,36 @@
             </button>
         </nav>
     </aside>
+    <div id="modal-editar" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Livro</h2>
+                <button class="close" onclick="fecharModal()">&times;</button>
+            </div>
+            <form id="form-editar-livro">
+                <div class="form-group">
+                    <label for="edit-titulo">Título:</label>
+                    <input type="text" id="edit-titulo" name="titulo" placeholder="Digite o título do livro" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-autor">Autor:</label>
+                    <input type="text" id="edit-autor" name="autor" placeholder="Digite o nome do autor" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-ano">Ano de Publicação:</label>
+                    <input type="number" id="edit-ano" name="ano_publicacao" placeholder="Digite o ano de publicação">
+                </div>
+                <div class="form-group">
+                    <label for="edit-quantidade">Quantidade Disponível:</label>
+                    <input type="number" id="edit-quantidade" name="quantidade_disponivel" placeholder="Digite a quantidade disponível" required min="0">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn-salvar">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="container">
         <!-- Seção Gerenciar Livros -->
         <div id="gerenciar-livros" class="secao  livros">

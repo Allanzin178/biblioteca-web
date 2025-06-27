@@ -14,14 +14,14 @@ body {
     height: 100vh;
 }
 
-.livros {
+#livros {
     display: flex;
     flex-direction: column;
     gap: 30px;
     padding: 30px;
 }
 
-.livros h2 {
+#livros h2 {
     color: white;
 }
 
@@ -30,7 +30,7 @@ body {
     width: 95%;
     margin: auto;
     border-radius: 10px;
-    background-color: #ffffff;
+    background-color: #fff;
     display: flex;
     flex-direction: row;
     align-items: center;

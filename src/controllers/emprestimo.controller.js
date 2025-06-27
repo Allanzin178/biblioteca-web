@@ -76,7 +76,7 @@ const atualizarEmprestimo = async (req, res) => {
         res.status(201).json({ message: 'Ok!', result })
 
     }catch(err){
-        return res.status(400).json({ message: 'Erro na devolução do livro!', err: err })
+        return res.status(400).json({ message: 'Erro na devolução do livro!', err: err.message })
     }
 }
 

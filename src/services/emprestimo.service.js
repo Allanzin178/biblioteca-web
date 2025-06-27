@@ -9,9 +9,11 @@ class EmprestimoService{
 
     getAll = () => {
         const query = `SELECT 
-            e.*, s.leitor_id, s.livro_id
+            e.*, s.leitor_id, s.livro_id, l.titulo as titulo_livro, u.nome as nome_leitor
             FROM emprestimos e
-            LEFT JOIN solicitacoes_emprestimo s ON s.id = e.solicitacao_id`
+            LEFT JOIN solicitacoes_emprestimo s ON s.id = e.solicitacao_id
+            JOIN livros l ON s.livro_id = l.id
+            JOIN users u ON s.leitor_id = u.id`
         return promiseSql(query)
     }
 
@@ -44,9 +46,10 @@ class EmprestimoService{
     }
 
     getAllFromUser = (id, status = 'ativo') =>{
-        const query = `SELECT e.* 
+        const query = `SELECT e.*, l.titulo as titulo_livro
                         FROM emprestimos e
                         INNER JOIN solicitacoes_emprestimo s ON s.id = e.solicitacao_id
+                        INNER JOIN livros l ON s.livro_id = l.id
                         WHERE s.leitor_id = ? AND e.status = ?`
         return promiseSql(query, [id, status])
     }
