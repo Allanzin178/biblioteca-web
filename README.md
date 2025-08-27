@@ -32,8 +32,8 @@
    Conectado ao banco!
    ```
 
-4. Acesse o projeto na porta 3000
-   [http://localhost:3000](http://localhost:3000)
+4. Acesse o projeto na porta 3000, na pagina de login
+   [http://localhost:3000/pages/login.html](http://localhost:3000/pages/login.html)
 
 5. Mude o url do repositorio remoto no git para evitar pushes acidentais
    ```sh
